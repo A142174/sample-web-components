@@ -15,12 +15,17 @@ export class AddressSearch {
   @State() isSearching: boolean = false;
   @State() value: string;
 
-  fetchAddressDebounced = AwesomeDebouncePromise(fetchAddressSuggestions, 500);
+  minInputChars: number = 7;
+  debounceTimeout: number = 500;
+  fetchAddressDebounced = AwesomeDebouncePromise(
+    fetchAddressSuggestions,
+    this.debounceTimeout
+  );
 
   async handleChange(ev) {
     this.value = ev.target.value;
 
-    if (this.value.length < 7) {
+    if (this.value.length < this.minInputChars) {
       this.showSuggestions = false;
       return;
     }
@@ -60,6 +65,11 @@ export class AddressSearch {
           value={this.value}
           onInput={event => this.handleChange(event)}
         />
+        {this.isSearching ? (
+          <agl-spinner class="address-search__spinner" />
+        ) : (
+          " "
+        )}
         <button
           class="address-search__button"
           onClick={() => this.handleClick()}

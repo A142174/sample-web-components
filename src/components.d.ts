@@ -17,15 +17,24 @@ export namespace Components {
   interface AglAddressSearchAttributes extends StencilHTMLAttributes {
     'redirect'?: string;
   }
+
+  interface AglSpinner {
+    'text': string;
+  }
+  interface AglSpinnerAttributes extends StencilHTMLAttributes {
+    'text'?: string;
+  }
 }
 
 declare global {
   interface StencilElementInterfaces {
     'AglAddressSearch': Components.AglAddressSearch;
+    'AglSpinner': Components.AglSpinner;
   }
 
   interface StencilIntrinsicElements {
     'agl-address-search': Components.AglAddressSearchAttributes;
+    'agl-spinner': Components.AglSpinnerAttributes;
   }
 
 
@@ -35,12 +44,20 @@ declare global {
     new (): HTMLAglAddressSearchElement;
   };
 
+  interface HTMLAglSpinnerElement extends Components.AglSpinner, HTMLStencilElement {}
+  var HTMLAglSpinnerElement: {
+    prototype: HTMLAglSpinnerElement;
+    new (): HTMLAglSpinnerElement;
+  };
+
   interface HTMLElementTagNameMap {
     'agl-address-search': HTMLAglAddressSearchElement
+    'agl-spinner': HTMLAglSpinnerElement
   }
 
   interface ElementTagNameMap {
     'agl-address-search': HTMLAglAddressSearchElement;
+    'agl-spinner': HTMLAglSpinnerElement;
   }
 
 

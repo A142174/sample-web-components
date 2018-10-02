@@ -1,0 +1,90 @@
+.agl-spinner__text {
+  color: #fff;
+  text-align: center;
+}
+.agl-spinner svg {
+  width: 40px;
+  height: 40px;
+}
+.agl-spinner line {
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-width: 3;
+  stroke-dasharray: 15;
+  stroke-dashoffset: -15;
+  animation: aglSpinner 1s ease-out infinite;
+}
+.agl-spinner .first {
+  animation-delay: -5s + ((1s / 10) * 1);
+}
+.agl-spinner .second {
+  animation-delay: -5s + ((1s / 10) * 2);
+}
+.agl-spinner .third {
+  animation-delay: -5s + ((1s / 10) * 3);
+}
+.agl-spinner .fourth {
+  animation-delay: -5s + ((1s / 10) * 4);
+}
+.agl-spinner .fifth {
+  animation-delay: -5s + ((1s / 10) * 5);
+}
+
+@keyframes aglSpinner {
+  0% {
+    stroke: #001cb0;
+    stroke-dashoffset: -15;
+  }
+  25% {
+    stroke: #001cb0;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke: #00dfed;
+    stroke-dashoffset: 16;
+  }
+  100% {
+    stroke-dashoffset: 16;
+  }
+}
+
+.agl-spinner-ie {
+  position: relative;
+  display: none;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.agl-spinner-ie img {
+  position: absolute;
+  left: -10px; /* handle the gif not being centered */
+  top: 0;
+  width: 64px;
+  height: 40px;
+  margin-bottom: 0; /* to override style bleeding in from dls3.css */
+  max-width: none; /* to override style bleeding in from dls3.css */
+}
+
+/* Edge: show the animated gif spinner instead of the css animation */
+@supports (position: -ms-page) {
+  .agl-spinner-ie {
+    display: block;
+  }
+
+  .agl-spinner svg {
+    display: none;
+  }
+}
+
+/* IE10 & IE11: show the animated gif spinner instead of the css animation */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .agl-spinner-ie {
+    display: block;
+  }
+
+  .agl-spinner svg {
+    display: none;
+  }
+}
