@@ -1,4 +1,5 @@
 import { Component, Prop, State } from "@stencil/core";
+import AwesomeDebouncePromise from "awesome-debounce-promise";
 import { fetchAddressSuggestions } from "./address-search.service.js";
 
 @Component({
@@ -14,6 +15,8 @@ export class AddressSearch {
   @State() isSearching: boolean = false;
   @State() value: string;
 
+  fetchAddressDebounced = AwesomeDebouncePromise(fetchAddressSuggestions, 500);
+
   async handleChange(ev) {
     this.value = ev.target.value;
 
@@ -21,19 +24,17 @@ export class AddressSearch {
       this.showSuggestions = false;
       return;
     }
-    setTimeout(async () => {
-      try {
-        this.isSearching = true;
-        this.suggestions = await fetchAddressSuggestions(this.value);
-        this.showSuggestions = true;
-        this.isSearching = false;
-      } catch (err) {
-        // handle err
-        this.suggestions = [];
-        this.showSuggestions = false;
-        this.isSearching = false;
-      }
-    }, 500);
+    try {
+      this.isSearching = true;
+      this.suggestions = await this.fetchAddressDebounced(this.value);
+      this.showSuggestions = true;
+      this.isSearching = false;
+    } catch (err) {
+      // handle err
+      this.suggestions = [];
+      this.showSuggestions = false;
+      this.isSearching = false;
+    }
   }
 
   handleClickSuggestion(suggestion) {
