@@ -63,10 +63,11 @@ export class AddressSearch {
       );
 
       if (isValidSelectedAddress(addressDetails)) {
-        storeSessionStorage(
-          SELECTED_ADDRESS_KEY,
-          addressDetails.SearchResponse
-        );
+        const model = {
+          details: addressDetails.SearchResponse,
+          address: this.searchboxValue
+        };
+        storeSessionStorage(SELECTED_ADDRESS_KEY, model);
 
         this.isAddressSelected = true;
       } else {
