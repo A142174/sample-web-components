@@ -12,9 +12,13 @@ import '@stencil/core';
 export namespace Components {
 
   interface AglAddressSearch {
+    'debounceTimeout': number;
+    'minInputChars': number;
     'redirect': string;
   }
   interface AglAddressSearchAttributes extends StencilHTMLAttributes {
+    'debounceTimeout'?: number;
+    'minInputChars'?: number;
     'redirect'?: string;
   }
 

@@ -2,8 +2,11 @@ import { Component, Prop, State } from "@stencil/core";
 import AwesomeDebouncePromise from "awesome-debounce-promise";
 import {
   fetchAddressSuggestions,
-  fetchSelectedAddress
+  fetchSelectedAddress,
+  storeSessionStorage,
+  isValidSelectedAddress
 } from "./address-search.service";
+import { SELECTED_ADDRESS_KEY } from "./address-search.config";
 
 @Component({
   tag: "agl-address-search",
@@ -11,19 +14,22 @@ import {
   shadow: true
 })
 export class AddressSearch {
+  // component props
   @Prop() redirect: string;
+  @Prop() minInputChars: number = 7;
+  @Prop() debounceTimeout: number = 500;
+
+  // component state
   @State() suggestions: any;
   @State() showSuggestions: boolean = false;
   @State() isAddressSelected: boolean = false;
   @State() isSearching: boolean = false;
   @State() searchboxValue: string;
 
-  minInputChars: number = 7;
-  debounceTimeout: number = 500;
-  fetchAddressDebounced = AwesomeDebouncePromise(
-    fetchAddressSuggestions,
-    this.debounceTimeout
-  );
+  fetchAddressDebounced = AwesomeDebouncePromise(async searchTerm => {
+    this.isSearching = true;
+    return fetchAddressSuggestions(searchTerm);
+  }, this.debounceTimeout);
 
   async handleChange(ev) {
     this.searchboxValue = ev.target.value;
@@ -33,7 +39,6 @@ export class AddressSearch {
       return;
     }
     try {
-      this.isSearching = true;
       this.suggestions = await this.fetchAddressDebounced(this.searchboxValue);
       this.showSuggestions = true;
     } catch (err) {
@@ -48,6 +53,7 @@ export class AddressSearch {
   async handleClickSuggestion(suggestion) {
     this.searchboxValue = suggestion.PartialAddress;
     this.showSuggestions = false;
+    this.isAddressSelected = false;
 
     try {
       this.isSearching = true;
@@ -56,19 +62,24 @@ export class AddressSearch {
         suggestion.PartialAddress
       );
 
-      if (addressDetails.ErrorMessage != null) {
-        // store addressDetails.SearchResponse in session storage
+      if (isValidSelectedAddress(addressDetails)) {
+        storeSessionStorage(
+          SELECTED_ADDRESS_KEY,
+          addressDetails.SearchResponse
+        );
+
+        this.isAddressSelected = true;
+      } else {
+        // handle error message
       }
-      this.isAddressSelected = true;
     } catch (err) {
       // handle err
-      this.isAddressSelected = false;
     } finally {
       this.isSearching = false;
     }
   }
 
-  handleClick() {
+  handleSearchClick() {
     // store address into in Session Storage
     if (this.isAddressSelected) {
       window.location.href = this.redirect;
@@ -92,7 +103,7 @@ export class AddressSearch {
         )}
         <button
           class="address-search__button"
-          onClick={() => this.handleClick()}
+          onClick={() => this.handleSearchClick()}
         >
           Search
         </button>

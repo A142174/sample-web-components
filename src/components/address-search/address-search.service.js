@@ -1,10 +1,9 @@
-const selectedAddressKey = "AGL-selected-address";
-const baseUrl = "https://agldstfeature14.digital.agl.com.au";
+import { BASE_URL } from "./address-search.config";
 
 const fetchAddressSuggestions = async searchTerm => {
   const maxResults = "5";
   const searchType = "SiteAddressSearch";
-  const url = `${baseUrl}/svc/QAS/GetSearchResult?searchKey=${searchTerm}&maxResults=${maxResults}&searchType=${searchType}`;
+  const url = `${BASE_URL}/svc/QAS/GetSearchResult?searchKey=${searchTerm}&maxResults=${maxResults}&searchType=${searchType}`;
 
   const response = await fetch(url);
   const data = await response.json();
@@ -12,16 +11,11 @@ const fetchAddressSuggestions = async searchTerm => {
 };
 
 const fetchSelectedAddress = async (moniker, address) => {
-  const url = `${baseUrl}/svc/QAS/ReturnSelectedAddress?selectedValue=${moniker}&selectedText=${address}`;
+  const url = `${BASE_URL}/svc/QAS/ReturnSelectedAddress?selectedValue=${moniker}&selectedText=${address}`;
   const response = await fetch(url);
   const data = await response.json();
 
-  if (isValidSelectedAddress(data)) {
-    storeSessionStorage(selectedAddressKey, data.SearchResult.SearchResponse);
-    return data.SearchResult;
-  }
-
-  throw "Error fetching address.";
+  return data.SearchResult;
 };
 
 const storeSessionStorage = (key, model) => {
@@ -29,12 +23,12 @@ const storeSessionStorage = (key, model) => {
 };
 
 const isValidSelectedAddress = response => {
-  return (
-    response &&
-    response.SearchResult &&
-    response.SearchResult.ErrorMessage == null &&
-    response.SearchResult.SearchResponse
-  );
+  return response && response.ErrorMessage == null && response.SearchResponse;
 };
 
-export { fetchAddressSuggestions, fetchSelectedAddress };
+export {
+  fetchAddressSuggestions,
+  fetchSelectedAddress,
+  storeSessionStorage,
+  isValidSelectedAddress
+};
