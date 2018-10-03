@@ -86,6 +86,10 @@ export class AddressSearch {
     }
   }
 
+  handleAddressNotFound() {
+    window.location.href = `${this.redirect}/#/v2/manual-address`;
+  }
+
   render() {
     return (
       <div class="address-search">
@@ -118,6 +122,12 @@ export class AddressSearch {
                   {suggestion.PartialAddress}
                 </li>
               ))}
+              <li
+                class="address-search__result"
+                onClick={() => this.handleAddressNotFound()}
+              >
+                <strong>My address wasn't found</strong>
+              </li>
             </ul>
           </div>
         ) : (

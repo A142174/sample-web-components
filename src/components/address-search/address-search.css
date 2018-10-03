@@ -79,10 +79,18 @@
   margin: 0;
 }
 
+.address-search__result strong {
+  color: #001cb0;
+}
+
 .address-search__result:hover {
   color: #fff;
   background-color: #3c51c2;
   cursor: pointer;
+}
+
+.address-search__result:hover strong {
+  color: #fff;
 }
 
 .address-search__spinner {
