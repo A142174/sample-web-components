@@ -65,7 +65,7 @@ export class AddressSearch {
       if (isValidSelectedAddress(addressDetails)) {
         const model = {
           details: addressDetails.SearchResponse,
-          address: this.searchboxValue
+          address: suggestion.PartialAddress
         };
         storeSessionStorage(SELECTED_ADDRESS_KEY, model);
 
