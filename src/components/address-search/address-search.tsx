@@ -1,4 +1,4 @@
-import { Component, Prop, State } from "@stencil/core";
+import { Component, Prop, State, Listen } from "@stencil/core";
 import AwesomeDebouncePromise from "awesome-debounce-promise";
 import {
   fetchAddressSuggestions,
@@ -8,6 +8,7 @@ import {
 } from "./address-search.service";
 import { SELECTED_ADDRESS_KEY } from "./address-search.config";
 
+// http://localhost:3333/build/
 @Component({
   tag: "agl-address-search",
   styleUrl: "address-search.css",
@@ -21,10 +22,24 @@ export class AddressSearch {
 
   // component state
   @State() suggestions: any;
+  @State() searchboxValue: string;
+  @State() isSearching: boolean = false;
+  @State() activeSuggestion: number = -1;
   @State() showSuggestions: boolean = false;
   @State() isAddressSelected: boolean = false;
-  @State() isSearching: boolean = false;
-  @State() searchboxValue: string;
+
+  @Listen("body:click")
+  handleScroll() {
+    if (this.showSuggestions) {
+      this.showSuggestions = false;
+    }
+  }
+
+  handleInputFocus() {
+    if (this.suggestions && this.suggestions.length > 0) {
+      this.showSuggestions = true;
+    }
+  }
 
   fetchAddressDebounced = AwesomeDebouncePromise(async searchTerm => {
     this.isSearching = true;
@@ -35,7 +50,9 @@ export class AddressSearch {
     this.searchboxValue = ev.target.value;
 
     if (this.searchboxValue.length < this.minInputChars) {
+      this.suggestions = [];
       this.showSuggestions = false;
+      this.isAddressSelected = false;
       return;
     }
     try {
@@ -97,12 +114,42 @@ export class AddressSearch {
         <input
           type="text"
           class="address-search__input"
-          placeholder="Start typing address here"
+          placeholder="Enter your home address here "
           value={this.searchboxValue}
           onInput={event => this.handleChange(event)}
+          onFocus={this.handleInputFocus.bind(this)}
         />
         {this.isSearching ? (
           <agl-spinner class="address-search__spinner" />
+        ) : (
+          " "
+        )}
+
+        {this.showSuggestions && !this.isSearching ? (
+          <div class="address-search__result-container">
+            <ul>
+              {this.suggestions.map(suggestion => (
+                <li class="address-search__result">
+                  <a
+                    href="javascript:void(0)"
+                    class="address-search__result--link"
+                    onClick={() => this.handleClickSuggestion(suggestion)}
+                  >
+                    {suggestion.PartialAddress}
+                  </a>
+                </li>
+              ))}
+              <li class="address-search__result">
+                <a
+                  href="javascript:void(0)"
+                  class="address-search__result--link"
+                  onClick={() => this.handleAddressNotFound()}
+                >
+                  <strong>My address wasn't found</strong>
+                </a>
+              </li>
+            </ul>
+          </div>
         ) : (
           " "
         )}
@@ -110,30 +157,8 @@ export class AddressSearch {
           class="address-search__button"
           onClick={() => this.handleSearchClick()}
         >
-          Search
+          Get an Estimate
         </button>
-        {this.showSuggestions && !this.isSearching ? (
-          <div class="address-search__result-container">
-            <ul>
-              {this.suggestions.map(suggestion => (
-                <li
-                  class="address-search__result"
-                  onClick={() => this.handleClickSuggestion(suggestion)}
-                >
-                  {suggestion.PartialAddress}
-                </li>
-              ))}
-              <li
-                class="address-search__result"
-                onClick={() => this.handleAddressNotFound()}
-              >
-                <strong>My address wasn't found</strong>
-              </li>
-            </ul>
-          </div>
-        ) : (
-          " "
-        )}
       </div>
     );
   }

@@ -19,7 +19,7 @@
     "awesome-debounce-promise": "^1.0.0"
   },
   "devDependencies": {
-    "@stencil/core": "0.12.4",
+    "@stencil/core": "^0.12.4",
     "@types/jest": "^23.3.1",
     "jest": "^23.4.2"
   },
